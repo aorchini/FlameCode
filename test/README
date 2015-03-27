@@ -1,0 +1,21 @@
+PyCharm
+
+ALT+9 for commits
+
+
+Python:
+
+List slice notation
+a[start:end]    # items start through end-1
+a[start:]       # items start through the rest of the array
+a[:end]         # items from the beginning through end-1
+a[:]            # a copy of the whole array
+a[-1]           # last item in the array
+a[-2:]          # last two items in the array
+a[:-2]          # everything except the last two items
+a[::2]          # every two items
+a[start:end:n]  # print every n elements starting from start to end-1
+a[::-1]         # reverse a string
+
+
+
