@@ -19,3 +19,5 @@ a[::-1]         # reverse a string
 
 
 
+Make operations with numpy
+Plot with matplotlib
