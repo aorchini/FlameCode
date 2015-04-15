@@ -9,15 +9,21 @@ that then can be coupled with an acoustic network, or to directly build an eigen
 problem that calculates the thermoacoutic modes with the largest eigenvalues.
 """
 
-from steadyFlame import steady_flame_area_FD3
 import numpy as np
-from loadAcoustics import loadAcoustics
+
 import derivs
+import eigProblem
+
+from steadyFlame import steady_flame_area_FD3
+from loadAcoustics import loadAcoustics
+from subMatrices import buildMatrix
+
+
 
 def main():
     """Main Function. Define variables and call appropriate routines"""
 
-    varList = {'beta': 1., 'convSpeed': 1., 'Mark': 0.02, 'axi': 1, 'acModes': 4, 'Nr': 801, 'Tf': 600., 'xf': 0.27}
+    varList = {'beta': 6., 'convSpeed': 1.2, 'Mark': 0.02, 'axi': 1, 'acModes': 4, 'Nr': 801, 'Tf': 600., 'xf': 0.15}
 
     # Solve steady flame
     [qMean,xMean,yMean] = steady_flame_area_FD3(varList['Mark'], varList['beta'], varList['axi'], varList['Nr'])
@@ -65,7 +71,15 @@ def main():
 
 
     [A, B, C, tau] = loadAcoustics(varList['xf'],varList['Tf'],varList['acModes'],varList['beta'])
-    print tau
+
+
+    Matrix = buildMatrix(Nr,dR,varList['beta'],den,r,dFMeanDr,d2FMeanDr2,varList['Mark'],varList['acModes'],A,B,C,Nx,dx,tau,qMean,varList['convSpeed'],yMean)
+
+    [d, W, V] = eigProblem.solveEigProb(Matrix)
+    [dnew, Wnew, Vnew] = eigProblem.selectUnstable(d, W, V)
+
+    print dnew, Wnew, Vnew
+
 
 if __name__ == "__main__":
     main()

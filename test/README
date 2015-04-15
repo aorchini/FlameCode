@@ -21,3 +21,13 @@ a[::-1]         # reverse a string
 
 Make operations with numpy
 Plot with matplotlib
+
+Debug:
+shift F9        : start debug
+ctrl F2         : stop
+F8: step        : forward
+F7: step        : into
+shift F8        : step out
+alt f9          : run to cursor
+ctrl shift f8   : view breakpoints
+ctrl f8         : toggle breakpoint

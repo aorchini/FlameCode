@@ -1,5 +1,8 @@
 __author__ = 'Alessandro Orchini'
 
+# ! /usr/bin/python
+"""Functions that evaluate finite different derivatives or differentiation matrices"""
+
 import numpy as np
 
 
@@ -35,8 +38,9 @@ def diff2_FD(ys, N, dx):
     for i in range(1, n - 1):
         D2ys[i] = (1.0 * ys[i - 1] - 2.0 * ys[i] + 1.0 * ys[i + 1]) / (dx * dx)
 
-    D2ys[n - 1] = (2.0 * ys[n - 2] - 2.0 * ys[n-1]) / (dx * dx)
+    D2ys[n - 1] = (2.0 * ys[n - 2] - 2.0 * ys[n - 1]) / (dx * dx)
     return D2ys
+
 
 def FinitDiff2Back_D1(y, dx, y0):
     """ Given a vector of length N_x and a function y defined at these values
@@ -50,25 +54,23 @@ def FinitDiff2Back_D1(y, dx, y0):
     dydx(1) = dydx(1) - y(0)/dx;
     dydx(2) = dydx(2) + 1/2*y(0)/dx;
     """
-    DN = np.zeros([len(y),len(y)])
+    DN = np.zeros([len(y), len(y)])
 
     DN[0, 0] = 1.
-    DN[1, 1] = 3./2.
+    DN[1, 1] = 3. / 2.
     DN[1, 0] = -2.
 
-    for ii in range (2,len(y)):
-        DN[ii, ii] = 3./2.
-        DN[ii, ii-1] = -2.
-        DN[ii, ii-2] = 1./2.
+    for ii in range(2, len(y)):
+        DN[ii, ii] = 3. / 2.
+        DN[ii, ii - 1] = -2.
+        DN[ii, ii - 2] = 1. / 2.
 
-    dydx = np.dot(DN,y)/dx
+    dydx = np.dot(DN, y) / dx
 
-    dydx[0] -= y0/dx
-    dydx[1] += 1./2.*y0/dx
+    dydx[0] -= y0 / dx
+    dydx[1] += 1. / 2. * y0 / dx
 
     return dydx
-
-
 
 
 def FinitDiff2Central_D2(y, dx, y0):
@@ -87,24 +89,25 @@ def FinitDiff2Central_D2(y, dx, y0):
     """
     DN = np.zeros([len(y), len(y)])
 
-    DN[0,0] = -2.
-    DN[0,1] = +1.
+    DN[0, 0] = -2.
+    DN[0, 1] = +1.
 
-    for ii in range(1, len(y)-1):
-        DN[ii, ii-1] = 1.
+    for ii in range(1, len(y) - 1):
+        DN[ii, ii - 1] = 1.
         DN[ii, ii] = -2.
-        DN[ii, ii+1] = 1.
+        DN[ii, ii + 1] = 1.
 
     DN[-1, -1] = +2.
     DN[-1, -2] = -5.
     DN[-1, -3] = +4.
     DN[-1, -4] = -1.
 
-    dydx = np.dot(DN, y)/(dx*dx)
+    dydx = np.dot(DN, y) / (dx * dx)
 
-    dydx[0] += y0/(dx*dx)
+    dydx[0] += y0 / (dx * dx)
 
     return dydx
+
 
 def D2_FinitDiff2Central_Coeff(N, dx):
     """
@@ -112,22 +115,23 @@ def D2_FinitDiff2Central_Coeff(N, dx):
     """
     DN = np.zeros([N, N])
 
-    DN[0,0] = -2.
-    DN[0,1] = 1.
+    DN[0, 0] = -2.
+    DN[0, 1] = 1.
 
-    for ii in range(1, N-1):
-        DN[ii, ii-1] = 1.
+    for ii in range(1, N - 1):
+        DN[ii, ii - 1] = 1.
         DN[ii, ii] = -2.
-        DN[ii, ii+1] = 1.
+        DN[ii, ii + 1] = 1.
 
     DN[-1, -1] = 2.
     DN[-1, -2] = -5.
     DN[-1, -3] = 4.
     DN[-1, -4] = -1.
 
-    DN = DN/(dx*dx)
+    DN = DN / (dx * dx)
 
     return DN
+
 
 def D1NU_FinitDiff2Back_Coeff(N, dx):
     """
@@ -157,17 +161,17 @@ def D1NU_FinitDiff2Back_Coeff(N, dx):
 
     DN = np.zeros([N, N])
 
-    DN[0, 0] = 1./dx[0]
-    DN[1, 1] = (2.*dx[1]+dx[0])/(dx[1]*(dx[1]+dx[0]))
-    DN[1, 0] = -(dx[0]+dx[1])/(dx[0]*dx[1])
+    DN[0, 0] = 1. / dx[0]
+    DN[1, 1] = (2. * dx[1] + dx[0]) / (dx[1] * (dx[1] + dx[0]))
+    DN[1, 0] = -1.0 * (dx[0] + dx[1]) / (dx[0] * dx[1])
 
     for ii in range(2, N):
-        DN[ii, ii] = (2.*dx[ii]+dx[ii-1])/(dx[ii]*(dx[ii]+dx[ii-1]))
-        DN[ii, ii-1] = -(dx[ii-1]+dx[ii])/(dx[ii-1]*dx[ii])
-        DN[ii, ii-2] = (dx[ii])/((dx[ii-1]+dx[ii])*dx[ii-1])
-
+        DN[ii, ii] = (2. * dx[ii] + dx[ii - 1]) / (dx[ii] * (dx[ii] + dx[ii - 1]))
+        DN[ii, ii - 1] = -(dx[ii - 1] + dx[ii]) / (dx[ii - 1] * dx[ii])
+        DN[ii, ii - 2] = (dx[ii]) / ((dx[ii - 1] + dx[ii]) * dx[ii - 1])
 
     return DN
+
 
 def D1_FinitDiff2Back_Coeff(N, dx):
     # Returns the coefficient of the derivative matrix as in FinitDiff2Back
@@ -175,14 +179,14 @@ def D1_FinitDiff2Back_Coeff(N, dx):
     DN = np.zeros([N, N])
 
     DN[0, 0] = 1.
-    DN[1, 1] = 3./2.
+    DN[1, 1] = 3. / 2.
     DN[1, 0] = -2.
 
     for ii in range(2, N):
-        DN[ii, ii] = 3./2.
-        DN[ii, ii-1] = -2.
-        DN[ii, ii-2] = 1./2.
+        DN[ii, ii] = 3. / 2.
+        DN[ii, ii - 1] = -2.
+        DN[ii, ii - 2] = 1. / 2.
 
-    DN = DN/dx
+    DN = DN / dx
 
     return DN
