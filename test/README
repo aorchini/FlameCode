@@ -31,3 +31,17 @@ shift F8        : step out
 alt f9          : run to cursor
 ctrl shift f8   : view breakpoints
 ctrl f8         : toggle breakpoint
+
+
+STATUS
+
+I can now correctly solve the eigenvalue problem for a flame with curvature and convective, incompressible flow model.
+
+TODO:
+1) Adapt for the case axi = 0.
+2) Add routine that calculate TF
+3) Add routine that enables to manage parameters
+4) Add GUI
+5) Add flow models (axi = 1-0, incompressible = 1-0 ...)
+6) Unify derivatives functions. I want functions that evaluated Df/Dr, and functions that return the differentiation matrix D/Dr.
+   Write them in the more general sense!!!

@@ -6,6 +6,36 @@ __author__ = 'Alessandro Orchini'
 import numpy as np
 
 
+def DfDr(f, r):
+    """Evaluate second order finite difference derivative.
+    NB: THIS DOES THE SAME THING AS THE FUNCTION diff_FD, BUT IN OPPOSITE ORDER!!
+    UNIFY THE TWO FUNTIONS!
+    """
+
+    dr = r[1] - r[0]
+
+    DN = np.zeros([len(r), len(r)])
+
+    for ii in range(0, len(r) - 2):
+        DN[ii, ii] = -3. / 2.
+        DN[ii, ii + 1] = 2.
+        DN[ii, ii + 2] = -1. / 2.
+
+    # Vorlast row is order 1
+    DN[-2, -3] = -1. / 2.
+    DN[-2, -1] = +1. / 2.
+
+    # Last row I use backward FD
+    DN[-1, -1] = +3. / 2.
+    DN[-1, -2] = -2.
+    DN[-1, -3] = +1. / 2.
+
+    DN = DN / dr
+    dfdr = np.dot(DN, f)
+
+    return dfdr
+
+
 def diff_FD(ys, N, dx):
     """
     First derivative - Second order finite difference

@@ -23,7 +23,7 @@ from subMatrices import buildMatrix
 def main():
     """Main Function. Define variables and call appropriate routines"""
 
-    varList = {'beta': 6., 'convSpeed': 1.2, 'Mark': 0.02, 'axi': 1, 'acModes': 4, 'Nr': 801, 'Tf': 600., 'xf': 0.15}
+    varList = {'beta': 4., 'convSpeed': 1.1, 'Mark': 0.0, 'axi': 1, 'acModes': 4, 'Nr': 801, 'Tf': 600., 'xf': 0.21}
 
     # Solve steady flame
     [qMean,xMean,yMean] = steady_flame_area_FD3(varList['Mark'], varList['beta'], varList['axi'], varList['Nr'])
@@ -78,7 +78,7 @@ def main():
     [d, W, V] = eigProblem.solveEigProb(Matrix)
     [dnew, Wnew, Vnew] = eigProblem.selectUnstable(d, W, V)
 
-    print dnew, Wnew, Vnew
+    print dnew/(2.*np.pi)
 
 
 if __name__ == "__main__":

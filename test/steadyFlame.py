@@ -21,13 +21,13 @@ def steady_flame_area_FD3(Mark, beta, axi, N):
     n = (N + 1) / 2
     if Mark == 0:
         if axi:
-            area = np.pi * (1.0 / beta) * np.sqrt(1.0 + (1.0 / beta) * (1.0 / beta))
-            xs = np.linspace(1, 0, n) / beta
-            ys = beta * (1 / beta - xs)
+            area = np.sqrt(1.0 + np.power(beta,2.0))/(np.power(beta,2.0) * 2.0)
+            xs = np.linspace(1., 0., n) / beta
+            ys = beta * (1. / beta - xs)
         else:
-            area = np.sqrt(1.0 + (1.0 / beta) * (1.0 / beta))
-            xs = np.linspace(1, 0, n) / beta
-            ys = beta * (1 / beta - xs)
+            area = np.sqrt(1.0 + np.power(beta,2.0))/(beta)
+            xs = np.linspace(1., 0., n) / beta
+            ys = beta * (1. / beta - xs)
 
         return [area, xs, ys]
 
