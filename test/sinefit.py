@@ -3,6 +3,7 @@ __author__ = 'Alessandro Orchini'
 import numpy as np
 import time
 
+
 def sinefit(*args):
     """Fit a sinusoidal function"""
     # params = sinefit(yin,t,f)
@@ -20,7 +21,7 @@ def sinefit(*args):
     # (general use) least squares fit to sinewave data using matrix operations.
     #
     # INPUTS:   -yin:        Input signal to be fitted (a vector)
-    #           -t:          Time vector (same length as yin)
+    # -t:          Time vector (same length as yin)
     #           -f:          Signal frequency (actual or estimate) [Hz]
     #           -verbose:    if 1, display information; else, don't. default: 1
     #           -plotflag:   If 1, plot; else, don't. default: 1
@@ -111,11 +112,10 @@ def sinefit(*args):
         end   %end demo
         """
     # convergence related parameters you can tweak:
-    TOL = 1.e-15   # Normalized initial tolerance
-    MTOL = 2.        # TOL relaxation multiplicand, MTOL > 1
-    MAX_FUN= 22.     # MAX number of function calls
-    MAX_ITER = 22.   # MAX number of iterations in one function call
-
+    TOL = 1.e-15  # Normalized initial tolerance
+    MTOL = 2.  # TOL relaxation multiplicand, MTOL > 1
+    MAX_FUN = 22.  # MAX number of function calls
+    MAX_ITER = 22.  # MAX number of iterations in one function call
 
     oct_flag = 0
     try:
@@ -125,34 +125,33 @@ def sinefit(*args):
         print ('Cannot create seed number')
 
     # varargin
-    if not(oct_flag):
+    if not (oct_flag):
         if len(args) < 3 and len(args) > 0:
             print 'ERROR: at least three input params needed'
             return
         else:
-            yin=args[0]
-            t=args[1]
-            f=args[2]
+            yin = args[0]
+            t = args[1]
+            f = args[2]
 
-            verbose=1
+            verbose = 1
             plotflag = 0
-            searchflag=1
-
+            searchflag = 1
 
         if len(args) == 4:
-            verbose=args[3]
+            verbose = args[3]
             plotflag = 0
-            searchflag=1
+            searchflag = 1
 
         elif len(args) == 5:
-            verbose=args[3]
-            plotflag=args[4]
-            searchflag=1
+            verbose = args[3]
+            plotflag = args[4]
+            searchflag = 1
 
         elif len(args) == 6:
-            verbose=args[3]
-            plotflag=args[4]
-            searchflag=args[5]
+            verbose = args[3]
+            plotflag = args[4]
+            searchflag = args[5]
 
         else:
             print('ERROR: too many input arguments')
@@ -169,8 +168,8 @@ def sinefit(*args):
 
     #plotting related
     if plotflag:
-        N_per=8  # number of periods plotted
-        N_hist = 11 # number of bins in histogram
+        N_per = 8  # number of periods plotted
+        N_hist = 11  # number of bins in histogram
 
     if verbose:
         tim = time.time()
@@ -179,70 +178,69 @@ def sinefit(*args):
     onevec = np.ones(N)
 
     # t does not have to be linearly spaced, so to estimate sampling time ts
-    ts = rms(np.diff(t),N-1) # ts needed in freq normalization of converg. calc
+    ts = rms(np.diff(t), N - 1)  # ts needed in freq normalization of converg. calc
 
-    if MTOL<0:
+    if MTOL < 0:
         print('ERROR: MTOL is a positive number > 1')
 
-    elif MTOL<1:
-        MTOL=1/MTOL
+    elif MTOL < 1:
+        MTOL = 1 / MTOL
         print('warning: MTOL should be > 1,')
         print('swiching to inverse value. XTOL = %f' % MTOL)
 
     # convergence related normalization
-    rmsyin = rms(yin,N)
-    TOL=rmsyin*TOL
+    rmsyin = rms(yin, N)
+    TOL = rmsyin * TOL
 
     if len(args) < 6:
         searchflag = 1
 
     # here we go
-    if not(searchflag):
-        x0 = sinefit3par(yin,2*np.pi*f*t,onevec)
-        x0 = np.append(x0, 2*np.pi*f) # not searching for freq
+    if not (searchflag):
+        x0 = sinefit3par(yin, 2 * np.pi * f * t, onevec)
+        x0 = np.append(x0, 2 * np.pi * f)  # not searching for freq
         success = 1
         if verbose:
             print('Quick mode: using 3-parameter sinefit')
 
     else:
-        [x0,iter] = sinefit4par(yin,t,ts,2*np.pi*f,onevec,TOL,MAX_ITER)
-        iter_total=iter
-        iter_sinefit4par = 1 # first function call
+        [x0, iter] = sinefit4par(yin, t, ts, 2 * np.pi * f, onevec, TOL, MAX_ITER)
+        iter_total = iter
+        iter_sinefit4par = 1  # first function call
 
         # success?
-        if iter<=MAX_ITER:
+        if iter <= MAX_ITER:
             success = 1
             if verbose:
                 print('\n\tConverged after ' + str(iter) + ' iterations\n')
         else:
             if verbose:
                 print('\n\tincreasing TOL...')
-            while iter>MAX_ITER and iter_sinefit4par<=MAX_FUN:
+            while iter > MAX_ITER and iter_sinefit4par <= MAX_FUN:
                 if verbose:
                     print('.')
                 # while number of function calls is < MAX_FUN, do:
-                TOL = TOL*MTOL;   #increase TOL
+                TOL = TOL * MTOL;  #increase TOL
                 if oct_flag:
-                    f=f+f/80.*np.random.randn()
+                    f = f + f / 80. * np.random.randn()
                 else:
                     # reset(s)
-                    f=f+f/80.*np.random.randn()
+                    f = f + f / 80. * np.random.randn()
 
-                [x0,iter] = sinefit4par(yin,t,ts,2*np.pi*f,onevec,TOL,MAX_ITER)
-                iter_total = iter_total+iter
-                iter_sinefit4par=iter_sinefit4par+1
+                [x0, iter] = sinefit4par(yin, t, ts, 2 * np.pi * f, onevec, TOL, MAX_ITER)
+                iter_total = iter_total + iter
+                iter_sinefit4par = iter_sinefit4par + 1
 
-
-            if iter>MAX_ITER:
+            if iter > MAX_ITER:
                 if verbose:
                     print('\nFailed to fit. The reasons could be:\n\t1. Bad '
-                        'initial guess for frequency OR\n\t2. '
-                        'the amplitude level is way below RMS noise floor OR'
-                        '\n\t3. the fundamental frequency drifts (retry with a portion of input signal) OR'
-                        '\n\t4. too small MAX_FUN, FUN_ITER, MTOL or TOL.\n\n')
+                          'initial guess for frequency OR\n\t2. '
+                          'the amplitude level is way below RMS noise floor OR'
+                          '\n\t3. the fundamental frequency drifts (retry with a portion of input signal) OR'
+                          '\n\t4. too small MAX_FUN, FUN_ITER, MTOL or TOL.\n\n')
 
                     print('%g function calls made, %g iterations allowed '
-                        'in each.\n\n' % (iter_sinefit4par-1, MAX_ITER))
+                          'in each.\n\n' % (iter_sinefit4par - 1, MAX_ITER))
 
                 success = 0
                 # return
@@ -254,23 +252,23 @@ def sinefit(*args):
                           'in each.\n\n' % (iter_sinefit4par, MAX_ITER))
 
     # prep the output parameters
-    A0=x0[0]
-    B0=x0[1]
-    C0=x0[2]
-    w=x0[3]
-    sinedata = x0[0]*np.cos(x0[3]*t) + x0[1]*np.sin(x0[3]*t);
+    A0 = x0[0]
+    B0 = x0[1]
+    C0 = x0[2]
+    w = x0[3]
+    sinedata = x0[0] * np.cos(x0[3] * t) + x0[1] * np.sin(x0[3] * t);
     yest = x0[2] + sinedata;
 
     if np.all(np.isreal(yin)):
-        f_est=w/(2*np.pi)
-        A=np.sqrt(A0*A0+B0*B0)
-        phi=np.arctan(-B0/A0)
-        if A0<0:
-            phi=phi+np.pi
+        f_est = w / (2 * np.pi)
+        A = np.sqrt(A0 * A0 + B0 * B0)
+        phi = np.arctan(-B0 / A0)
+        if A0 < 0:
+            phi = phi + np.pi
 
         params = [C0, A, f_est, phi]
     else:
-        f_est=np.real(w/(2*np.pi))
+        f_est = np.real(w / (2 * np.pi))
         phi = np.angle(A0)
         # phi = angle(x0(1)/2+x0(2)/2)+pi/2;
         # temp = -B0/A0;
@@ -278,18 +276,18 @@ def sinefit(*args):
         # if real(A0)<0
         #     phi=phi+pi;
         # end
-        params = [C0, abs(A0/2.)+abs(B0/2.), f_est, phi]
+        params = [C0, abs(A0 / 2.) + abs(B0 / 2.), f_est, phi]
 
-    yres = yin-yest
-    rmserr = rms(yres,N)
+    yres = yin - yest
+    rmserr = rms(yres, N)
 
     if verbose:
-        t_elapsed=time.time()-tim;
-        if t_elapsed<60:
+        t_elapsed = time.time() - tim;
+        if t_elapsed < 60:
             print('\tTime elapsed: %g seconds\n' % t_elapsed)
         else:
             # this is not likely to happen
-            print('\tTime elapsed: %g minutes and %g seconds\n' % np.floor(t_elapsed/60),np.rem(t_elapsed,60))
+            print('\tTime elapsed: %g minutes and %g seconds\n' % np.floor(t_elapsed / 60), np.rem(t_elapsed, 60))
 
         if plotflag:
             print('\nplotting...')
@@ -309,9 +307,11 @@ def sinefit(*args):
     #        ylabel('imag')
     #        legend('data','fit',1)
 
-    if not(success):
+    if not (success):
         params = ['nan', 'nan', 'nan', 'nan']
-        yest='nan'; yres='nan'; rmserr='nan'
+        yest = 'nan';
+        yres = 'nan';
+        rmserr = 'nan'
 
 
     # varargout
@@ -323,63 +323,64 @@ def sinefit(*args):
     return [params, yest, yres, rmserr]
 
 
-def sinefit3par(yin,wt,onevec):
+def sinefit3par(yin, wt, onevec):
     """3-parameter fit is used to create an initiall guess in sinefit4par
     """
-    cosvec=np.cos(wt)
-    sinvec=np.sin(wt)
-    D0 = np.zeros((len(cosvec),3))
-    D0[:,0] = cosvec
-    D0[:,1] = sinvec
-    D0[:,2] = onevec
-    #x0=inv(D0.'*D0)*(D0.'*yin);
+    cosvec = np.cos(wt)
+    sinvec = np.sin(wt)
+    D0 = np.zeros((len(cosvec), 3))
+    D0[:, 0] = cosvec
+    D0[:, 1] = sinvec
+    D0[:, 2] = onevec
+    # x0=inv(D0.'*D0)*(D0.'*yin);
     if np.all(np.isreal(yin)):
-        [Q,R] = np.linalg.qr(D0)
-        x0 = np.linalg.solve(R,(np.dot(Q.T,yin)))  ### R\(Q.'*yin);
+        [Q, R] = np.linalg.qr(D0)
+        x0 = np.linalg.solve(R, (np.dot(Q.T, yin)))  ### R\(Q.'*yin);
     else:
-        x0=np.linalg.lstsq(D0,yin)
+        x0 = np.linalg.lstsq(D0, yin)
 
     return x0
 
-def sinefit4par(yin,t,ts,w,onevec,TOL,MAX_ITER):
-    x0 = sinefit3par(yin,w*t,onevec)
+
+def sinefit4par(yin, t, ts, w, onevec, TOL, MAX_ITER):
+    x0 = sinefit3par(yin, w * t, onevec)
     x0 = np.append(x0, 0)
     iter = 0
     success = 0
     while success == 0:
-        w=w+x0[3]
-        wt=w*t
-        cosvec=np.cos(wt)
-        sinvec=np.sin(wt)
-        D0 = np.zeros((len(cosvec),4))
-        D0[:,0] = cosvec
-        D0[:,1] = sinvec
-        D0[:,2] = onevec
-        D0[:,3] = -x0[0]*t*sinvec+x0[1]*t*cosvec
+        w = w + x0[3]
+        wt = w * t
+        cosvec = np.cos(wt)
+        sinvec = np.sin(wt)
+        D0 = np.zeros((len(cosvec), 4))
+        D0[:, 0] = cosvec
+        D0[:, 1] = sinvec
+        D0[:, 2] = onevec
+        D0[:, 3] = -x0[0] * t * sinvec + x0[1] * t * cosvec
         x0old = x0
 
         # x0=inv(D0.'*D0)*(D0.'*yin);
         if np.all(np.isreal(yin)):
-            [Q,R] = np.linalg.qr(D0)
-            x0 = np.linalg.solve(R,np.dot(Q.T,yin))
+            [Q, R] = np.linalg.qr(D0)
+            x0 = np.linalg.solve(R, np.dot(Q.T, yin))
         else:
-            x0=np.linalg.lstsq(D0,yin)
+            x0 = np.linalg.lstsq(D0, yin)
 
         iter += 1
 
         # error term with dw normalized
-        temp=abs(x0-x0old)*[1, 1, 1, ts]
-        err=max(temp);
+        temp = abs(x0 - x0old) * [1, 1, 1, ts]
+        err = max(temp);
 
-        if err<TOL or iter > MAX_ITER: # if iter>MAX_ITER, increase TOL and
-            success = 1              # re-visit this function later.
+        if err < TOL or iter > MAX_ITER:  # if iter>MAX_ITER, increase TOL and
+            success = 1  # re-visit this function later.
 
     x0[-1] = w  # place w in the position if w's increment
 
     return [x0, iter]
 
 
-#function plotsinefit(N_hist,N_per,t,ts,yin,yest,yres,f,N,verbose)
+# function plotsinefit(N_hist,N_per,t,ts,yin,yest,yres,f,N,verbose)
 #    [Nh,X] = hist([yin,yest],N_hist);
 #    subplot(232)
 #    barh(X,Nh)
@@ -452,15 +453,15 @@ def sinefit4par(yin,t,ts,w,onevec,TOL,MAX_ITER):
 #        fprintf('done\n')
 #    end
 
-def rms(x,N):
-    y = np.linalg.norm(x)/np.sqrt(N)
+def rms(x, N):
+    y = np.linalg.norm(x) / np.sqrt(N)
     return y
 
 
-t = np.linspace(0,10,1001)
-y = 5.0*np.cos(t*2*np.pi - np.pi/4)
-[params, yest, yres, rmserr] = sinefit(y,t,1.2,1,0,1)
-print params
-print yest
-print yres
-print rmserr
+#t = np.linspace(0,10,1001)
+#y = 5.0*np.cos(t*2*np.pi - np.pi/4)
+#[params, yest, yres, rmserr] = sinefit(y,t,1.2,1,0,1)
+#print params
+#print yest
+#print yres
+#print rmserr

@@ -1,8 +1,5 @@
-__author__ = 'Alessandro Orchini'
-
-# ! /usr/bin/python
-"""
-Functions that construct the linearized thermoacoustic system.
+#!/usr/bin/python
+"""Functions that construct the linearized thermoacoustic system.
 The acoustics is not solved here, it is imported from Matlab files generated with my code or LOTAN.
 The only requirement is that it is in state space form.
 Using methods I can generalize to include for more
@@ -10,14 +7,15 @@ Using methods I can generalize to include for more
 - flow models (currently convective, incompressible model)
 """
 
+__author__ = 'Alessandro Orchini'
+
+
 import numpy as np
 
 import derivs
 
 
 def buildMatrix(Nr, dR, beta, den, r, dFMeanDr, d2FMeanDr2, Mark, M, A, B, C, Nx, dx, tau, heatRelease, K, yMean):
-
-
     m_ff = M_ff(Nr, dR, beta, den, r, dFMeanDr, d2FMeanDr2, Mark)
     m_fs = M_fs(M, Nr, C, Nx, r, dFMeanDr, dx, beta)
     m_fv = M_fv(Nx, Nr, r, dFMeanDr, dx, beta)
@@ -34,9 +32,9 @@ def buildMatrix(Nr, dR, beta, den, r, dFMeanDr, d2FMeanDr2, Mark, M, A, B, C, Nx
 
     Matrix = np.concatenate((M_f, M_s, M_v), axis=0)
 
-    #Check dimensions
+    # Check dimensions
     checkM = np.shape(Matrix)
-    if (checkM[0] != Nx+Nr+M or checkM[1] != Nx+Nr+M):
+    if (checkM[0] != Nx + Nr + M or checkM[1] != Nx + Nr + M):
         print 'Dimensions of A are not consistent with M!'
         exit()
 

@@ -43,5 +43,26 @@ TODO:
 3) Add routine that enables to manage parameters
 4) Add GUI
 5) Add flow models (axi = 1-0, incompressible = 1-0 ...)
-6) Unify derivatives functions. I want functions that evaluated Df/Dr, and functions that return the differentiation matrix D/Dr.
-   Write them in the more general sense!!!
+6) Unify derivatives functions. I have written and tested new derivative functions in derivsnew.
+   Now change the code and use these functions! I need to properly set the boundary conditions.
+   Check that the old results and the new are the same!
+
+
+
+Doxygen
+
+$ doxygen -g conFileName
+$ $EDITOR confFileName
+
+(add these lines to the end and comment them
+out where they appear earlier)
+
+# Customizations for doxypy.py
+FILTER_SOURCE_FILES = YES # Because I use Python comments into doxygen. 
+INPUT_FILTER = "python /usr/local/bin/doxypy.py" # The filter of above
+OPTIMIZE_OUTPUT_JAVA   = YES # Pyhton looks like Java
+EXTRACT_ALL = YES # Documents everything
+FILE_PATTERNS = "*.py" "Only py files
+INPUT = "files.py" "directories" 
+
+$ doxygen confFileName

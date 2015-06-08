@@ -1,16 +1,20 @@
 __author__ = 'Alessandro Orchini'
 
 # ! /usr/bin/python
-"""Functions that evaluate steady flame area and properties. Based on a code originally written by ICW"""
+"""\brief Conical G-equation steady shape solver
+
+Functions that evaluate steady flame shape and properties using for a conical, laminar flame modelled with the G-equation. \n
+Based on a MATLAB code originally written by Iain C. Waugh
+"""
 
 import numpy as np
 
-import derivs
+import derivsnew
 
 
 def steady_flame_area_FD3(Mark, beta, axi, N):
     """
-    Function that calculates the conical mean flame shape and
+    Function that calculates the conical mean flame shape and heat release
     :param Mark: Markstein number = Markstein length/Flame height
     :param beta: flame aspect ratio
     :param axi: 1 = axisymmetric, 0 = not
@@ -21,11 +25,11 @@ def steady_flame_area_FD3(Mark, beta, axi, N):
     n = (N + 1) / 2
     if Mark == 0:
         if axi:
-            area = np.sqrt(1.0 + np.power(beta,2.0))/(np.power(beta,2.0) * 2.0)
+            area = np.sqrt(1.0 + np.power(beta, 2.0)) / (np.power(beta, 2.0) * 2.0)
             xs = np.linspace(1., 0., n) / beta
             ys = beta * (1. / beta - xs)
         else:
-            area = np.sqrt(1.0 + np.power(beta,2.0))/(beta)
+            area = np.sqrt(1.0 + np.power(beta, 2.0)) / (beta)
             xs = np.linspace(1., 0., n) / beta
             ys = beta * (1. / beta - xs)
 
@@ -68,37 +72,19 @@ def steady_flame(Mark, beta, axi, N, tol, ys):
     n = (N + 1) / 2
     xs = np.linspace(1, 0, n) / beta
     dx = xs[1] - xs[0]
-    # xx = np.linspace(1./beta, 0, 500)
 
     # loop
     i = 1
     itmax = 99
     r = grad(ys, N, dx, axi, SL, Mark, beta)
     n = [np.linalg.norm(r * (-dx))]
-    #  sfigure(152);plot(xs,ys,'b.',xx,interp1(xs,ys,xx,'pchip'),-xx,interp1(xs,ys,xx,'pchip'),'b-'),ylim([0 1.2])
-    #  sfigure(153);plot(r)
+
     while i < itmax and np.linalg.norm(r * (-dx)) > tol:
         ys = newton_step(Mark, beta, axi, dx, ys, N)
         r = grad(ys, N, dx, axi, SL, Mark, beta)
         n.append(np.linalg.norm(r * (-dx)))
-        #         if (1)
-        #            sfigure(152);
-        #            plot(xs,ys,'b.',xx,interp1(xs,ys,xx,'pchip'),-xx,interp1(xs,ys,xx,'pchip'),'b-')
-        #            ylim([0 1.2])
-        #            sfigure(153);plot(r)
-        #            drawnow
-        #         end
-        i = + 1
-        #          pause
-        #       disp(['The steady flame has converged at iteration ',num2str(i),' out of ',num2str(itmax),'...
-        #       with a residual equal to ',num2str(n(end))])
-        #       sfigure(152);
-        #       plot(xs,ys,'b.',xx,interp1(xs,ys,xx,'pchip'),'b-',-xx,interp1(xs,ys,xx,'pchip'),'b-'),
-        #       ylim([0 1.2])
-        #       sfigure(154);
-        #       plot(log10(n))
-        #       drawnow
-    # work out length of flame surface
+        i += 1
+
     w = np.ones(len(xs))
     w[0] = 0.
     w[1] = 55. / 24.
@@ -108,14 +94,20 @@ def steady_flame(Mark, beta, axi, N, tol, ys):
     w[-2] = 55. / 24.
     w[-3] = -1. / 6.
     w[-4] = 11. / 8.
-    Dys = derivs.diff_FD(ys, N, dx)
-    D2ys = derivs.diff2_FD(ys, N, dx)
+
+    Dys = derivsnew.FD1_CT2_D(ys,dx)
+    D2ys = derivsnew.FD2_CT2_D(ys, dx)
+
+    if Mark != 0.0: #Apply BC at tip
+        Dys[-1] = 0.0
+        D2ys[-1] = (2.0 * ys[-2] - 2.0 * ys[-1]) / (dx * dx)
+
     temp = np.sqrt(1. + np.power(Dys, 2.))
     k = -D2ys / np.power(temp, 3.)
     if axi:
         temp2 = np.zeros(len(temp))
-        temp2[1:-1] = -Dys[1:-1] / (temp[1:-1] * xs[1:-1])
-        temp2[-1] = 0   # here we have r =0
+        temp2[0:-1] = -Dys[0:-1] / (temp[0:-1] * xs[0:-1])
+        temp2[-1] = 0  # here we have r =0
         k = k + temp2
 
     if axi:
@@ -153,7 +145,7 @@ def newton_step(Mark, beta, axi, dx, ys, N):
 
 def tridiag(N, a, b, c, r, u):
     """
-    Operations on a tridiagonal matrix
+    Operations on a tridiagonal matrix. Code from Numerical Recipes.
     :param N: number of points on the flame.
     :param a: Upper diagonal values
     :param b: Diagonal values
@@ -226,18 +218,26 @@ def grad(ys, N, dx, axi, SL, Mark, beta):
     :return: res = 1 - SL * (1 - Mark * k)*sqrt(1+Dys^2)
     """
     n = (N + 1) / 2
-    Dys = derivs.diff_FD(ys, N, dx)
-    D2ys = derivs.diff2_FD(ys, N, dx)
+
+    # Dys = derivs.diff_FD(ys, N, dx)
+    # D2ys = derivs.diff2_FD(ys, N, dx)
+
+    Dys = derivsnew.FD1_CT2_D(ys, dx)
+    D2ys = derivsnew.FD2_CT2_D(ys, dx)
+    if Mark != 0.0:
+        Dys[-1] = 0.0
+        D2ys[-1] = (2.0 * ys[-2] - 2.0 * ys[-1]) / (dx * dx)
+
     temp = np.sqrt(1 + np.power(Dys, 2.))
     k = D2ys / np.power(temp, 3.)
     if axi:
         xs = np.linspace(1, 0, n) / beta
         temp2 = np.zeros(len(temp))
         temp2[0:-1] = + Dys[0:-1] / (temp[0:-1] * xs[0:-1])
-        temp2[-1] = 0    # here we have r=0
+        temp2[-1] = 0  # here we have r=0
         k += temp2
 
     dys_dt = (1 - SL * (1 - Mark * k) * temp)  # Markstein not multiplied by beta
-    dys_dt[0] = 0
+    dys_dt[0] = 0 # Apply attachment BC
 
     return dys_dt

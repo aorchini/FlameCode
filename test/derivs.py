@@ -1,15 +1,15 @@
 __author__ = 'Alessandro Orchini'
 
-# ! /usr/bin/python
-"""Functions that evaluate finite different derivatives or differentiation matrices"""
+#!/usr/bin/python
+"""Functions that evaluate finite different derivatives or differentiation matrices
+"""
 
 import numpy as np
 
-
 def DfDr(f, r):
-    """Evaluate second order finite difference derivative.
-    NB: THIS DOES THE SAME THING AS THE FUNCTION diff_FD, BUT IN OPPOSITE ORDER!!
-    UNIFY THE TWO FUNTIONS!
+    """\brief second order forward finite difference first derivative
+
+    Evaluate the first derivative of f using a second order finite difference forward scheme
     """
 
     dr = r[1] - r[0]
