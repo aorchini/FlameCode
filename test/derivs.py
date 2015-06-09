@@ -220,3 +220,28 @@ def D1_FinitDiff2Back_Coeff(N, dx):
     DN = DN / dx
 
     return DN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

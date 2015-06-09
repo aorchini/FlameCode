@@ -39,4 +39,3 @@ def loadAcoustics(xf, Tf, M, beta):
     tau = 1. / LM_Lf
 
     return [A, B, C, tau]
-
