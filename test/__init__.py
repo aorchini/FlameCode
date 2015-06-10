@@ -32,12 +32,13 @@ from subMatrices import buildMatrix
 
 
 def main():
+
     """Main Function.
 
     Define variables and call appropriate routines
     """
 
-    varList = {'beta': 6., 'convSpeed': 1.2, 'Mark': 0.02, 'axi': 1, 'acModes': 4, 'Nr': 801, 'Tf': 600., 'xf': 0.15}
+    varList = {'beta': 6., 'convSpeed': 1.2, 'Mark': 0., 'axi': 1, 'acModes': 4, 'Nr': 801, 'Tf': 600., 'xf': 0.51}
 
     # Solve steady flame.
     # BC1: I have the attachment BC at r = 1, always

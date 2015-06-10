@@ -15,6 +15,7 @@ import numpy as np
 import derivsnew
 
 def buildMatrix(Nr, dR, beta, den, r, FMean, dFMeanDr, d2FMeanDr2, Mark, M, A, B, C, Nx, dx, tau, heatRelease, K):
+
     m_ff = M_ff(Nr, dR, beta, den, r, dFMeanDr, d2FMeanDr2, Mark)
     m_fs = M_fs(M, Nr, C, Nx, r, dFMeanDr, dx, beta)
     m_fv = M_fv(Nx, Nr, r, dFMeanDr, dx, beta, Mark)
@@ -66,11 +67,16 @@ def M_ff(Nr, dR, beta, den, r, dFMeanDr, d2FMeanDr2, Mark):
 
     for ii in range(0, Nr):
         for jj in range(0, Nr):
-            M_ff[jj, ii] = D1[jj, ii] * dFMeanDr[jj] / np.sqrt(den[jj]) + \
-                           -Mark * (D2[jj, ii] / den[jj] +
-                                    -2 * beta * beta * D1[jj, ii] * dFMeanDr[jj] * d2FMeanDr2[jj] / (
-                                        den[jj] * den[jj]) +
-                                    +D1[jj, ii] / r[jj])
+            if(r[jj]==0):
+                M_ff[jj, ii] = D1[jj, ii] * dFMeanDr[jj] / np.sqrt(den[jj]) + \
+                            -Mark * (D2[jj, ii] / den[jj] +
+                                        -2 * beta * beta * D1[jj, ii] * dFMeanDr[jj] * d2FMeanDr2[jj] / (den[jj] * den[jj]))
+            else:
+                M_ff[jj, ii] = D1[jj, ii] * dFMeanDr[jj] / np.sqrt(den[jj]) + \
+                            -Mark * (D2[jj, ii] / den[jj] +
+                                        -2 * beta * beta * D1[jj, ii] * dFMeanDr[jj] * d2FMeanDr2[jj] / (den[jj] * den[jj]) +
+                                       +D1[jj, ii] / r[jj])
+
 
     M_ff = -beta * beta / np.sqrt(1 + beta * beta) * M_ff
 
@@ -175,10 +181,17 @@ def M_sf(beta, Nr, M, tau, B, r, den, Mark, dFMeanDr, d2FMeanDr2, yMean, heatRel
 
     for jj in range(0, Nr):
         for ii in range(0, Nr):
-            dq[jj] += + mu[ii] * r[ii] * (dFMeanDr[ii] * D1[ii, jj] / np.sqrt(den[ii]) +
-                                          - Mark * (
-                                              D2[ii, jj] / den[ii] - 2. * beta * beta * d2FMeanDr2[ii] * dFMeanDr[ii] *
-                                              D1[ii, jj] / (den[ii] * den[ii]) + D1[ii, jj] / r[ii] ) )
+            if(r[ii]==0):
+                dq[jj] += + mu[ii] * r[ii] * (dFMeanDr[ii] * D1[ii, jj] / np.sqrt(den[ii]) +
+                                              - Mark * (
+                                                  D2[ii, jj] / den[ii] - 2. * beta * beta * d2FMeanDr2[ii] * dFMeanDr[ii] *
+                                                  D1[ii, jj] / (den[ii] * den[ii]) ) )
+            else:
+                dq[jj] += + mu[ii] * r[ii] * (dFMeanDr[ii] * D1[ii, jj] / np.sqrt(den[ii]) +
+                                              - Mark * (
+                                                  D2[ii, jj] / den[ii] - 2. * beta * beta * d2FMeanDr2[ii] * dFMeanDr[ii] *
+                                                  D1[ii, jj] / (den[ii] * den[ii]) + D1[ii, jj] / r[ii] ) )
+
 
     # Add contribution of first point
     corrCoeff = 3. / 8. * abs(dR)
